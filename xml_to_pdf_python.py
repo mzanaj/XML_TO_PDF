@@ -322,14 +322,14 @@ def xml_to_pdf(file_path, pdf, off_name):
         import base64
         data = text_dict['BinaryObject.Base64']
         imgdata = base64.b64decode(data)
-        filename = '//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/traffic_image.jpeg'  # I assume you have a way of picking unique filenames
+        filename = '/xml_to_pdf/traffic_image.jpeg'  # I assume you have a way of picking unique filenames
 
         with open(filename, 'wb') as f:
                 f.write(imgdata)
 
         pdf.add_page()
         pdf.set_font('Times', 'B', 13)     
-        pdf.image('//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/traffic_image.jpeg',  5, 10, 200)
+        pdf.image('/xml_to_pdf/traffic_image.jpeg',  5, 10, 200)
         pdf.cell(30, 10, 'Accident Diagram', 0, 0, 'C')
 
     #Narrative Text
@@ -344,14 +344,14 @@ def xml_to_pdf(file_path, pdf, off_name):
     
 
     f_name='{off_name}.pdf'.format(off_name = off_name)
-    file_loc= os.path.join(r'\\slcipsbfile01\police\slic\SLIC\AccidentPDF', f_name)
-    #file_loc= os.path.join(r'C:\Users\1001139\Desktop\Projects_mz\temp', f_name)
+    file_loc= os.path.join(r'\AccidentPDF', f_name)
+    #file_loc= os.path.join(r'\temp', f_name)
 
     pdf.output(file_loc, 'F')
     pdf.close()
 
 def xml_to_txt(root):
-    f=open("//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/xml_to_txt.txt", 'w')       
+    f=open("/xml_to_pdf/xml_to_txt.txt", 'w')       
     #Recursive helper function
     def helper_function(temp_parent, temp_children, n):
 
@@ -433,9 +433,9 @@ def email(filename):
 
     subject = "TESTING - XML AUDIT ALERT SYSTEM"
     body = 'Hello Fellow Recorders (?), \n\nThis is alert being generated from the XML_to_PDF production script signifing a potential update/change/error. \n\nPlease, take a look at the attached .txt file for a more detailed explanation. \n\nBest, \nPython'
-    sender_email = "noreply_crime_intel@slcgov.com"
-    receiver_email = ['PoliceRecordsSupervisors@slcgov.com',]
-    cc_email = ['lindsay.larsen1@slcgov.com',]
+    sender_email = "sender@hotmail.com"
+    receiver_email = ['receveiver@hotmail.com',]
+    cc_email = ['cc@hotmail.com',]
     
     # Create a multipart message and set headers
     message = MIMEMultipart()
@@ -484,13 +484,13 @@ def email(filename):
 #reason the same case id is updated 27 times the new name will be case_id_xxxxxxxxxx where x represent a random code. 
 #This mechanism allows to keep track each version of the same XMl. 
 def case_id_name_check(case_id):
-    df = pd.read_csv("//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/case_id_list.csv") 
+    df = pd.read_csv("/xml_to_pdf/case_id_list.csv") 
     if case_id in df['case_id'].values:
         return True
     else:
         #Add to Dataset
         df.loc[len(df)] = case_id
-        df.to_csv("//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/case_id_list.csv", index=False)
+        df.to_csv("/xml_to_pdf/case_id_list.csv", index=False)
         return False
 
 def official_name(case_id):
@@ -509,7 +509,7 @@ def official_name(case_id):
             return case_id
         
 def unzip():
-    directory = '//slcipsbfile01/police/slic/SLIC/AccidentXML'
+    directory = '/AccidentXML'
     #UNZIP XML DIRECOTORIES, save files, and move original zip to processedAccidentXML
     for subdir, dirs, files in os.walk(directory):
         for file in files:
@@ -526,14 +526,14 @@ def unzip():
                     zObject.extractall(directory)
                     zObject.close()
 
-                f2=os.path.join("//slcipsbfile01/police/slic/SLIC/ProccessedAccidentXML", file)
+                f2=os.path.join("/ProccessedAccidentXML", file)
                 raw_path2=r'%s' % f2
                 shutil.move(raw_path,raw_path2 )
 
 def xml_files():
     txt_num = 2
     #Convert XMLS into PDFS and save to AccidentPDF
-    directory = '//slcipsbfile01/police/slic/SLIC/AccidentXML'
+    directory = '/AccidentXML'
     
     for subdir, dirs, files in os.walk(directory):
         for file in files:
@@ -592,7 +592,7 @@ def xml_files():
                             pdf.add_page()
 
                             #Header
-                            pdf.image('//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/logo_pb.png', 10, 8, 33)
+                            pdf.image('/logo_pb.png', 10, 8, 33)
                             pdf.set_font('Times', 'BIU', 17)
                             pdf.cell(80)
 
@@ -608,8 +608,8 @@ def xml_files():
                             xml_to_pdf(raw_path,pdf,off_name)
 
                             #Delete picture that is created after saving it in pdf
-                            if os.path.isfile("//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/traffic_image.jpeg"):
-                                os.remove("//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/traffic_image.jpeg")
+                            if os.path.isfile("/traffic_image.jpeg"):
+                                os.remove("/traffic_image.jpeg")
 
                         elif(FLAG==True):
                             print('\033[93m'+ "SENSITIVE CASE",case_id, raw_path + '\033[0m')
@@ -619,18 +619,18 @@ def xml_files():
                             #Create txt file for RECORDS
                             xml_to_txt(root)
                             #Email such txt file
-                            email('//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/xml_to_txt.txt')
+                            email('/xml_to_pdf/xml_to_txt.txt')
 
                     else:
                         print('\033[94m' +"DIFFERENT JURISDICTION", case_id +'\033[0m')
                 except Exception as e:
                     print('\033[91m' +"NO CASE ID", raw_path +'\033[0m')
                     xml_to_txt(root)
-                    email("//slcipsbfile01/police/slic/SLIC/AUTOMATION/xml_to_pdf/xml_to_txt.txt")
+                    email("/xml_to_pdf/xml_to_txt.txt")
                     #raise
                     pass
 def delete_xmls():
-    directory = '//slcipsbfile01/police/slic/SLIC/AccidentXML'
+    directory = '/AccidentXML'
     #UNZIP XML DIRECOTORIES, save files, and move original zip to processedAccidentXML
     for subdir, dirs, files in os.walk(directory):
         for file in files:
